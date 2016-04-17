@@ -1,0 +1,33 @@
+{% include 'header.html' %}
+<!-- Page Content -->
+<div class="container">
+  <!-- Jumbotron Header -->
+  <header class="jumbotron hero-spacer text-center">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1>Register</h1>
+        <br>
+        <form action="" method="POST">
+          <p>First Name: <input type="text" name="fname" placeholder="First Name"></p>
+          <p>Last Name: <input type="text" name="lname" placeholder="Last Name"></p>
+          <p>School:
+            <select name="school">
+              <option></option>
+              <option value="stech">Staten Island Tech</option>
+              <option value="btech">Brooklyn Tech</option>
+              <option value="fordham">Fordham Prep</option>
+              <option value="stuy">Stuyvesant</option>
+            </select>
+          </p>
+          <p>Email: <input type="text" name="email" placeholder="Email Address"></p>
+          <p>Password: <input type="password" name="pass1" placeholder="Password"></p>
+          <p>Confirm Password: <input type="password" name="pass2" placeholder="Confirm Password"></p>
+          <button type="submit" class="btn btn-success btn-large">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </header>
+</div>
+<!-- /.container -->
+
+{% include 'footer.html' %}

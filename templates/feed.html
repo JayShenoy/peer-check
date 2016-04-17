@@ -1,0 +1,133 @@
+{% include 'header.html' %}
+
+<!-- Page Content -->
+<div class="container">
+  <div class="row">
+    <div id="list">
+      <div class="col-sm-2 classbar">
+          <br>
+          <a href="/upload"><button type="button" class="btn btn-success btn-block"><span class="glyphicon glyphicon-file"></span> Create</button></a>
+          <br>
+          <div class="list-group">
+              <button id="all" class="list-group-item subject active">All</button>
+              <button id="english" class="list-group-item subject">English</button>
+              <button id="history" class="list-group-item subject">History</button>
+              <button id="science" class="list-group-item subject">Science</button>
+              <button id="spanish" class="list-group-item subject">Spanish</button>
+              <button id="latin" class="list-group-item subject">Latin</button>
+              <button id="greek" class="list-group-item subject">Greek</button>
+          </div>
+      </div>
+      <div class="col-sm-8">
+          <table class="table table-hover">
+              <thead>
+                  <tr>
+                      <h1>Feed</h1>
+                  </tr>
+              </thead>
+              <tbody id="feed"></tbody>
+          </table>
+      </div>
+    </div>
+    <div id="editor" style="display:none">
+      <div class="col-md-12">
+        <div id="text"></div>
+        <button id="submitComments" class="btn btn-success btn-large" type="submit">Submit Comments</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container -->
+
+<!-- Annotator -->
+<script src="{{ url_for('static', filename='js/annotator-full.min.js')}}"></script>
+
+<script>
+var monthNames = [
+  "January", "February", "March",
+  "April", "May", "June", "July",
+  "August", "September", "October",
+  "November", "December"
+];
+
+// Array of posts
+var posts = [];
+
+// Get a reference to our posts
+var ref = new Firebase("https://peer-check-posts.firebaseio.com");
+
+// Add post to feed
+var addPost = function (post, key) {
+  var month = monthNames[post.deadline.getMonth()];
+  var day = post.deadline.getDate();
+  var year = post.deadline.getFullYear();
+  var tr = $("<tr style='cursor:pointer'></tr>");
+
+  // When post clicked
+  tr.click(function () {
+    $("#list").hide();
+    $("#editor").show();
+
+    $("#text").html(post.paper);
+    $("#text").annotator();
+
+    ref.child(key).on("child_changed", function(snapshot) {
+      var newPaper = snapshot.val();
+      $("#text").html(newPaper);
+    });
+
+    $("#submitComments").click(function () {
+      // Updated HTML
+      newPaper = $("#text").html();
+      ref.child(key).update({"paper": newPaper});
+      window.location = "/feed";
+    });
+  });
+  var td = $("<td></td>").html("<h4>Name: " + post.title + "</h4><h5>Deadline: " + month + " " + day + ", " + year + "</h5>");
+  tr.prepend(td);
+
+  // Add to top of feed
+  $("#feed").prepend(tr);
+};
+
+// Retrieve new posts as they are added to our database
+ref.on("child_added", function(snapshot, prevChildKey) {
+  var newPost = snapshot.val();
+  newPost.deadline = newPost.deadline.replace("/", "-");
+  newPost.deadline = new Date(newPost.deadline);
+
+  // Only display posts for your school
+  if (newPost.school === "{{ current_user.school }}") {
+    addPost(newPost, snapshot.key());
+    posts.push(newPost);
+  }
+});
+
+// Initialize tab behavior
+var initTabs = function () {
+  $(".subject").each(function (index) {
+    var subject = $(this).attr("id");
+
+    // When tab clicked
+    $(this).click(function () {
+      // Clear feed
+      $("#feed").html("");
+
+      for(var i = posts.length - 1; i >= 0; i--) {
+        var post = posts[i];
+
+        // Don't filter posts if subject is "All"
+        if(subject === "all")
+          addPost(post);
+        // Only display posts pertaining to course
+        else if(post.subject === subject)
+          addPost(post);
+      }
+    });
+  });
+};
+
+initTabs();
+</script>
+
+{% include 'footer.html' %}

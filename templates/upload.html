@@ -1,0 +1,103 @@
+{% include 'header.html' %}
+<!-- Page Content -->
+<div class="container">
+    <!-- Jumbotron Header -->
+    <header class="jumbotron hero-spacer">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Upload Your Assignment</h1>
+                <p>Please upload a .docx file.</p>
+                <br>
+                <form id="fileform" enctype="multipart/form-data">
+                  <p>Title: <input type="text" id="title" placeholder="Name of Assignment"></p>
+                  <br>
+                  <p>Subject:
+                      <select id="subject">
+                          <option></option>
+                          <option value="english">English</option>
+                          <option value="history">History</option>
+                          <option value="science">Science</option>
+                          <option value="spanish">Spanish</option>
+                          <option value="latin">Latin</option>
+                          <option value="greek">Greek</option>
+                      </select>
+                  <br>
+                  </p>
+                  <br>
+                <form>
+                <p>Deadline: <input type="date" id="deadline"></p>
+                <br>
+                <span class="btn btn-default btn-file">
+                  Choose File
+                  <input type="file" class="btn btn-primary btn-large" name="document" accept=".docx">
+                  <div id="fileName"></div>
+                </span>
+                <br><br>
+                <button type="submit" class="btn btn-success btn-large">Post Assignment</button>
+            </div>
+        </div>
+    </header>
+    <p id="message"></p>
+    <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
+    <script>
+    var uploadFile = function () {
+      var $form = $("#fileform")[0];
+      var url = "/upload";
+      var data = new FormData($form);
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        async: false,
+        success: function (data) {
+          var $messageArea = $("#message");
+          if (data.wrongFileType)
+            $messageArea.html("Please upload a .docx file.");
+          else {
+            postFirebase(data.message);
+          }
+      }});
+
+      return false;
+    };
+
+    $("#fileform").submit(uploadFile);
+    </script>
+    <script>
+    // Script for choosing files
+    $(document).on('change', '.btn-file :file', function() {
+      var input = $(this),
+          numFiles = input.get(0).files ? input.get(0).files.length : 1,
+          label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+      $("#fileName").html(label);
+    });
+    </script>
+
+    <script>
+    var results = [];
+    var forum = new Firebase ("https://peer-check-posts.firebaseio.com");
+
+    var postFirebase = function (document_text) {
+      var Title = $("#title").val();
+      var Subject = $("#subject").val();
+    	var Deadline = $("#deadline").val();
+    	var Paper = document_text;
+      forum.push({user_id: {{ current_user.id }}, title: Title, subject: Subject, deadline: Deadline, paper: Paper, school: "{{ current_user.school }}", numReviewers: 0});
+    	var entry = [{{ current_user.id }}, Title, Subject, Deadline, Paper];
+    	results.push(entry);
+      $("#title").val("");
+    	$("#subject").val("");
+    	$("#deadline").val("");
+    	$("#paper").val("");
+
+      alert("Your file has been added to the feed. Check back to view feedback.");
+      return false;
+    };
+    </script>
+</div>
+
+{% include 'footer.html' %}

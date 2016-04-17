@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Peer Check</title>
+
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heroic-features.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/annotator.min.css') }}">
+
+    <script src="{{ url_for('static', filename='js/firebase.js') }}"></script>
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
+    <style>
+      body {
+        font-family: 'Arvo', serif;
+      }
+      .btn-file {
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+            <a class="navbar-brand" href="{{ url_for('home') }}">Peer Check</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            {% if current_user.is_authenticated() %}
+            <li>
+              <a href="/feed"><span class="glyphicon glyphicon-list-alt"></span> Feed</a>
+            </li>
+            <li>
+              <a href="/upload"><span class="glyphicon glyphicon-upload"></span> Upload</a>
+            </li>
+            {% endif %}
+          </ul>
+
+          {% if current_user.is_authenticated() %}
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Sign Out</a>
+            </li>
+          </ul>
+
+          {% else %}
+          <ul class="nav navbar-nav navbar-right">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle btn-large dropdownsign" type="button" data-toggle="dropdown" style="margin-top:8px;">
+                    Sign In
+                    <span class="caret"></span>
+                </button>
+
+                <ul class="dropdown-menu" style="padding-right: 12px; padding-left: 12px; padding-bottom: 8px;">
+
+                    <form role="form" class="signindrop" action="/login" method="POST">
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd">Password:</label>
+                            <input type="password" class="form-control" name="pass">
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" name="remember"> Remember Me</label>
+                        </div>
+                        <button type="submit" class="btn btn-default">Login</button>
+                    </form>
+                </ul>
+            </div>
+        </ul>
+        {% endif %}
+        </div>
+        <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container -->
+    </nav>
