@@ -1,0 +1,87 @@
+{% include 'header.html' %}
+
+<!-- Page Content -->
+<div class="container">
+  <div class="row">
+    <div id="list">
+      <div class="col-md-12">
+          <table class="table table-hover">
+              <thead>
+                  <tr>
+                      <h1>Submitted Documents</h1>
+                  </tr>
+              </thead>
+              <tbody id="feed"></tbody>
+          </table>
+      </div>
+    </div>
+    <div id="editor" style="display:none">
+      <div class="col-md-12">
+        <div id="text"></div>
+        <p>Comments:</p>
+        <div id="comments"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container -->
+
+<!-- Annotator -->
+<script src="{{ url_for('static', filename='js/annotator-full.min.js')}}"></script>
+
+<script>
+var monthNames = [
+  "January", "February", "March",
+  "April", "May", "June", "July",
+  "August", "September", "October",
+  "November", "December"
+];
+
+// Array of posts
+var posts = [];
+
+// Get a reference to our posts
+var ref = new Firebase("https://peer-check-posts.firebaseio.com");
+
+// Add post to feed
+var addPost = function (post, key) {
+  var month = monthNames[post.deadline.getMonth()];
+  var day = post.deadline.getDate();
+  var year = post.deadline.getFullYear();
+  var tr = $("<tr style='cursor:pointer'></tr>");
+
+  // When post clicked
+  tr.click(function () {
+    $("#list").hide();
+    $("#editor").show();
+
+    $("#text").html(post.paper);
+
+    for(var i = post.comments.length - 1; i >= 0; i--) {
+      $("#comments").append("<div>Comment " + (i + 1) + ": " + post.comments[i] + "</div><br><br>");
+    }
+  });
+  var td = $("<td></td>").html("<h4>Name: " + post.title + "</h4><h5>Deadline: " + month + " " + day + ", " + year + "</h5>");
+  tr.prepend(td);
+
+  // Add to top of feed
+  $("#feed").prepend(tr);
+};
+
+// Retrieve new posts as they are added to our database
+ref.on("child_added", function(snapshot, prevChildKey) {
+  var newPost = snapshot.val();
+  newPost.deadline = newPost.deadline.replace("/", "-");
+  newPost.deadline = new Date(newPost.deadline);
+
+  // Only display posts for your school
+  if (newPost.school === "{{ current_user.school }}") {
+    addPost(newPost, snapshot.key());
+    posts.push(newPost);
+  }
+});
+
+
+</script>
+
+{% include 'footer.html' %}

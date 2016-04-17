@@ -65,6 +65,10 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/comments')
+def comments():
+    return render_template('comments.html')
+
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
@@ -116,7 +120,7 @@ def register():
         session.commit()
 
         login_user(new_user)
-        return redirect(url_for('home'))
+        return redirect(url_for('feed'))
 
 @app.route('/feed')
 @login_required
@@ -139,7 +143,7 @@ def login():
         # Check if password correct
         if user.check_password_hash(form_password):
             login_user(user, remember=request.form.get('remember'))
-            return redirect(url_for('home'))
+            return redirect(url_for('feed'))
         else:
             return 'Incorrect password.'
 

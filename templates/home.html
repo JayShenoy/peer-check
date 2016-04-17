@@ -10,8 +10,9 @@
             <br>
             <p align ="center"> <i> After using Peer Check, your assignments will no longer be subjected to bad grades due to unforeseen mistakes. </i></p>
             <br>
-            <p align="center"><a href="/register" class="btn btn-primary btn-large">Sign Up!</a>
-            </p>
+            {% if not current_user.is_authenticated() %}
+            <p align="center"><a href="/register" class="btn btn-primary btn-large">Sign Up!</a></p>
+            {% endif %}
         </header>
 
         <br>
