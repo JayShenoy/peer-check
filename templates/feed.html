@@ -32,6 +32,9 @@
     <div id="editor" style="display:none">
       <div class="col-md-12">
         <div id="text"></div>
+        <p>Write comments below:</p>
+        <textarea id="comments"></textarea>
+        <br><br>
         <button id="submitComments" class="btn btn-success btn-large" type="submit">Submit Comments</button>
       </div>
     </div>
@@ -69,18 +72,20 @@ var addPost = function (post, key) {
     $("#editor").show();
 
     $("#text").html(post.paper);
-    $("#text").annotator();
-
-    ref.child(key).on("child_changed", function(snapshot) {
-      var newPaper = snapshot.val();
-      $("#text").html(newPaper);
-    });
 
     $("#submitComments").click(function () {
-      // Updated HTML
-      newPaper = $("#text").html();
-      ref.child(key).update({"paper": newPaper});
+      // Comments
+      var comments;
+      if(post.comments) {
+        comments = post.comments.push($("#comments").val());
+      }
+      else {
+        comments = [$("#comments").val()]
+      }
+
+      ref.child(key).update({"comments": comments});
       window.location = "/feed";
+      alert("Your comment was received");
     });
   });
   var td = $("<td></td>").html("<h4>Name: " + post.title + "</h4><h5>Deadline: " + month + " " + day + ", " + year + "</h5>");

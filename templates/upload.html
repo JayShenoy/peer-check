@@ -86,7 +86,7 @@
       var Subject = $("#subject").val();
     	var Deadline = $("#deadline").val();
     	var Paper = document_text;
-      forum.push({user_id: {{ current_user.id }}, title: Title, subject: Subject, deadline: Deadline, paper: Paper, school: "{{ current_user.school }}", numReviewers: 0});
+      forum.push({user_id: {{ current_user.id }}, title: Title, subject: Subject, deadline: Deadline, paper: Paper, school: "{{ current_user.school }}", numReviewers: 0, comments: []});
     	var entry = [{{ current_user.id }}, Title, Subject, Deadline, Paper];
     	results.push(entry);
       $("#title").val("");
