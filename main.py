@@ -20,7 +20,7 @@ ALLOWED_EXTENSIONS = set(['docx'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.secret_key = 'b195rlQzyk1al2A7y17WUxQ7ZmhB4jEl'
+app.secret_key = os.urandom(24).encode('hex')
 
 # Connect to database and initialize session
 engine = create_engine('sqlite:///data.db', echo=False)
